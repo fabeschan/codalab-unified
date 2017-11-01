@@ -12,8 +12,16 @@ RUN apt-get install -y python-software-properties python-virtualenv software-pro
 RUN apt-get install -y zip curl
 
 WORKDIR /opt
-RUN git clone -b fabianc-test https://github.com/codalab/codalab-cli.git
 RUN git clone https://github.com/codalab/codalab-worksheets.git
+# Install Node.js
+RUN curl -sL https://deb.nodesource.com/setup_4.x | bash -
+RUN apt-get install -y nodejs
+RUN echo '{ "allow_root": true }' > /root/.bowerrc
+ENV CODALAB_HOME=/home/codalab
+RUN cd /opt/codalab-worksheets && ./setup.sh
+
+WORKDIR /opt
+RUN git clone -b fabianc-test https://github.com/codalab/codalab-cli.git
 
 RUN cd /opt/codalab-cli && ./setup.sh server
 ENV PATH="/opt/codalab-cli/codalab/bin:${PATH}"
@@ -26,6 +34,7 @@ ENV CODALAB_USERNAME=codalab
 ENV CODALAB_PASSWORD=1234
 
 RUN cl config server/class SQLiteModel
+RUN cl config server/host 0.0.0.0
 RUN cl config server/engine_url sqlite:////home/codalab/bundle.db
 WORKDIR /opt/codalab-cli
 RUN venv/bin/python scripts/create-root-user.py 1234
@@ -35,13 +44,6 @@ COPY passwordfile /opt/worker/passwordfile
 RUN chmod 600 /opt/worker/passwordfile
 
 RUN mkdir /tmp/scratch
-
-# Install Node.js
-RUN curl -sL https://deb.nodesource.com/setup_4.x | bash -
-RUN apt-get install -y nodejs
-RUN echo '{ "allow_root": true }' > /root/.bowerrc
-ENV CODALAB_HOME=/home/codalab
-RUN cd /opt/codalab-worksheets && ./setup.sh
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD ["/usr/bin/supervisord"]
