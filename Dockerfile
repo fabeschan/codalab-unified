@@ -34,7 +34,7 @@ ENV CODALAB_USERNAME=codalab
 ENV CODALAB_PASSWORD=1234
 
 RUN cl config server/class SQLiteModel
-RUN cl config server/host 0.0.0.0
+RUN cl config server/rest_host 0.0.0.0
 RUN cl config server/engine_url sqlite:////home/codalab/bundle.db
 WORKDIR /opt/codalab-cli
 RUN venv/bin/python scripts/create-root-user.py 1234
