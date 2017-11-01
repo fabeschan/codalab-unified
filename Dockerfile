@@ -11,6 +11,8 @@ RUN apt-get install -y python-dev python-pip
 RUN apt-get install -y python-software-properties python-virtualenv software-properties-common
 RUN apt-get install -y zip curl
 
+ARG CACHEBUST=1
+
 WORKDIR /opt
 RUN git clone https://github.com/codalab/codalab-worksheets.git
 # Install Node.js
